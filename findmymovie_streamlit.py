@@ -68,14 +68,23 @@ def _clear_cache():
 with st.sidebar:
     st.title("⚙️ Settings")
 
-    # Prefer environment variable; allow override via sidebar input
-    default_tmdb = os.getenv("TMDB_TOKEN", "")
-    tmdb_token = st.text_input(
-        "TMDb v4 Read Access Token (Bearer)",
-        value=default_tmdb,
-        type="password",
-        help="Find this in TMDb settings → API → v4 auth. It's the long 'Bearer' token.",
-    )
+    # Load TMDb token from Streamlit Cloud secrets first, then .env for local dev
+    try:
+        default_tmdb = st.secrets["TMDB_TOKEN"]
+    except Exception:
+        default_tmdb = os.getenv("TMDB_TOKEN", "")
+
+    # Only show API key field for local dev (no secrets available)
+    if not default_tmdb:
+        tmdb_token = st.text_input(
+            "TMDb v4 Read Access Token (Bearer)",
+            type="password",
+            help="Find this in TMDb settings → API → v4 auth.",
+        )
+    else:
+        # Use secrets securely — never expose in UI
+        tmdb_token = default_tmdb
+        st.success("🔑 TMDb connected via secure secrets")
 
     st.session_state.setdefault("cache_ttl", 1800)
     cache_ttl = st.slider("Cache TTL (seconds)", 60, 7200, st.session_state["cache_ttl"], 60)
