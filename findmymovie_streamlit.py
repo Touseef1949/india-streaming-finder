@@ -416,3 +416,8 @@ with right:
 st.caption(
     "Data source: TMDb. This product uses the TMDB API but is not endorsed or certified by TMDB."
 )
+
+st.markdown(
+    "<p style='text-align:center; color:#888; font-size:0.85rem;'>🎬 Built by <a href='https://touseefshaik.com' target='_blank'>Touseef Shaik</a></p>",
+    unsafe_allow_html=True,
+)
